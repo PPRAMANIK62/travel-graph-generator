@@ -7,29 +7,43 @@ import { Button } from '@/components/ui/button';
 import { getDatasets, getDatasetById } from '@/lib/db';
 import { DataSet } from '@/types';
 import { BarChart, Upload, MoveLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Plot = () => {
   const [datasets, setDatasets] = useState<DataSet[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<DataSet | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   
   useEffect(() => {
-    const allDatasets = getDatasets();
-    setDatasets(allDatasets);
-    
-    // Check if we have a datasetId from navigation state
-    const locationState = location.state as { datasetId?: string } | null;
-    
-    if (locationState?.datasetId) {
-      const dataset = getDatasetById(locationState.datasetId);
-      if (dataset) {
-        setSelectedDataset(dataset);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const allDatasets = await getDatasets();
+        setDatasets(allDatasets);
+        
+        // Check if we have a datasetId from navigation state
+        const locationState = location.state as { datasetId?: string } | null;
+        
+        if (locationState?.datasetId) {
+          const dataset = await getDatasetById(locationState.datasetId);
+          if (dataset) {
+            setSelectedDataset(dataset);
+          }
+        } else if (allDatasets.length > 0) {
+          // Select the first dataset if no dataset is selected
+          setSelectedDataset(allDatasets[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to fetch datasets");
+      } finally {
+        setIsLoading(false);
       }
-    } else if (allDatasets.length > 0) {
-      // Select the first dataset if no dataset is selected
-      setSelectedDataset(allDatasets[0]);
-    }
+    };
+    
+    fetchData();
   }, [location.state]);
 
   const handleUploadClick = () => {
@@ -75,7 +89,11 @@ const Plot = () => {
           </div>
           
           <div className="space-y-8">
-            {datasets.length === 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center p-8">
+                <p className="text-muted-foreground">Loading datasets...</p>
+              </div>
+            ) : datasets.length === 0 ? (
               <div className="bg-card border rounded-xl p-10 text-center animate-fade-up">
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
                   <BarChart className="h-6 w-6 text-primary" />

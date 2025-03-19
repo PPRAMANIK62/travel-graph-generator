@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -8,19 +7,29 @@ import { Button } from '@/components/ui/button';
 import { getDatasets } from '@/lib/db';
 import { DataSet } from '@/types';
 import { LineChart, CalendarDays } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Input = () => {
   const [datasets, setDatasets] = useState<DataSet[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<DataSet | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  const loadDatasets = () => {
-    const allDatasets = getDatasets();
-    setDatasets(allDatasets);
-    
-    // Select the most recent dataset if no dataset is selected
-    if (allDatasets.length > 0 && !selectedDataset) {
-      setSelectedDataset(allDatasets[allDatasets.length - 1]);
+  const loadDatasets = async () => {
+    setIsLoading(true);
+    try {
+      const allDatasets = await getDatasets();
+      setDatasets(allDatasets);
+      
+      // Select the most recent dataset if no dataset is selected
+      if (allDatasets.length > 0 && !selectedDataset) {
+        setSelectedDataset(allDatasets[0]);
+      }
+    } catch (error) {
+      console.error("Error loading datasets:", error);
+      toast.error("Failed to load datasets");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,7 +72,11 @@ const Input = () => {
           <div className="space-y-8">
             <FileUpload onUploadSuccess={handleUploadSuccess} />
             
-            {datasets.length > 0 && (
+            {isLoading ? (
+              <div className="flex justify-center p-8">
+                <p className="text-muted-foreground">Loading datasets...</p>
+              </div>
+            ) : datasets.length > 0 ? (
               <div className="animate-fade-up">
                 <div className="flex items-center gap-2 mb-4">
                   <h2 className="text-xl font-semibold">Datasets</h2>
@@ -105,7 +118,7 @@ const Input = () => {
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
             
             {selectedDataset && (
               <div className="animate-fade-up mt-8">

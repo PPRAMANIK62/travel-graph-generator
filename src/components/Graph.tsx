@@ -33,7 +33,7 @@ const Graph = ({ datasetId, columns }: GraphProps) => {
     }
   }, [columns]);
   
-  const handleGenerateGraph = () => {
+  const handleGenerateGraph = async () => {
     if (!xColumn || !yColumn) {
       toast.error('Please select both X and Y axes');
       return;
@@ -41,7 +41,7 @@ const Graph = ({ datasetId, columns }: GraphProps) => {
     
     setIsLoading(true);
     try {
-      const data = getDataForColumns(datasetId, xColumn, yColumn);
+      const data = await getDataForColumns(datasetId, xColumn, yColumn);
       setChartData(data);
     } catch (error) {
       console.error('Error generating graph:', error);

@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { UploadCloud, FileText, X, Check, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -87,15 +86,17 @@ const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
         return;
       }
       
-      addDataset(datasetName, data, columns);
-      toast.success('Data uploaded successfully', {
-        description: `Loaded ${data.length} records with ${columns.length} columns`
-      });
-      
-      // Reset form
-      setFile(null);
-      setDatasetName('');
-      onUploadSuccess();
+      const result = await addDataset(datasetName, data, columns);
+      if (result) {
+        toast.success('Data uploaded successfully', {
+          description: `Loaded ${data.length} records with ${columns.length} columns`
+        });
+        
+        // Reset form
+        setFile(null);
+        setDatasetName('');
+        onUploadSuccess();
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
       toast.error('Failed to upload file');

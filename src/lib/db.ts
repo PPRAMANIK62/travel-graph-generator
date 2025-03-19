@@ -1,10 +1,7 @@
 
 import { toast } from 'sonner';
-import { DataSet, TravelData, Column } from '@/types';
-
-// In-memory database for now
-let datasets: DataSet[] = [];
-let currentId = 0;
+import { DataSet, TravelData, Column, SupabaseDataSet } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
 // Infer column types from data
 const inferColumnType = (value: any): "string" | "number" | "date" | "boolean" => {
@@ -81,50 +78,111 @@ export const parseCSV = (csvText: string): { data: TravelData[], columns: Column
   }
 };
 
-// Add a new dataset
-export const addDataset = (name: string, data: TravelData[], columns: Column[]): DataSet => {
-  const id = `dataset-${++currentId}`;
-  const dataset: DataSet = {
-    id,
-    name,
-    columns,
-    data,
-    createdAt: new Date()
-  };
-  
-  datasets.push(dataset);
-  return dataset;
+// Add a new dataset to Supabase
+export const addDataset = async (name: string, data: TravelData[], columns: Column[]): Promise<DataSet | null> => {
+  try {
+    const { data: insertResult, error } = await supabase
+      .from('user_uploads')
+      .insert({
+        name,
+        columns,
+        data
+      })
+      .select('*')
+      .single();
+    
+    if (error) {
+      console.error("Error adding dataset to Supabase:", error);
+      toast.error("Failed to save dataset to the database");
+      return null;
+    }
+    
+    const dataset: DataSet = {
+      id: insertResult.id,
+      name: insertResult.name,
+      columns: insertResult.columns,
+      data: insertResult.data,
+      createdAt: new Date(insertResult.created_at)
+    };
+    
+    return dataset;
+  } catch (error) {
+    console.error("Error adding dataset:", error);
+    toast.error("Failed to save dataset");
+    return null;
+  }
 };
 
-// Get all datasets
-export const getDatasets = (): DataSet[] => {
-  return datasets;
+// Get all datasets from Supabase
+export const getDatasets = async (): Promise<DataSet[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_uploads')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error("Error fetching datasets from Supabase:", error);
+      toast.error("Failed to fetch datasets from the database");
+      return [];
+    }
+    
+    return data.map((item: SupabaseDataSet) => ({
+      id: item.id,
+      name: item.name,
+      columns: item.columns,
+      data: item.data,
+      createdAt: new Date(item.created_at)
+    }));
+  } catch (error) {
+    console.error("Error fetching datasets:", error);
+    toast.error("Failed to fetch datasets");
+    return [];
+  }
 };
 
-// Get a dataset by ID
-export const getDatasetById = (id: string): DataSet | undefined => {
-  return datasets.find(dataset => dataset.id === id);
+// Get a dataset by ID from Supabase
+export const getDatasetById = async (id: string): Promise<DataSet | undefined> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_uploads')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      console.error("Error fetching dataset by ID from Supabase:", error);
+      toast.error("Failed to fetch dataset");
+      return undefined;
+    }
+    
+    return {
+      id: data.id,
+      name: data.name,
+      columns: data.columns,
+      data: data.data,
+      createdAt: new Date(data.created_at)
+    };
+  } catch (error) {
+    console.error("Error fetching dataset by ID:", error);
+    toast.error("Failed to fetch dataset");
+    return undefined;
+  }
 };
 
 // Get columns from a dataset
-export const getColumns = (datasetId: string): Column[] => {
-  const dataset = getDatasetById(datasetId);
+export const getColumns = async (datasetId: string): Promise<Column[]> => {
+  const dataset = await getDatasetById(datasetId);
   return dataset?.columns || [];
 };
 
 // Get data for specific columns
-export const getDataForColumns = (datasetId: string, xColumn: string, yColumn: string): { x: any; y: any; }[] => {
-  const dataset = getDatasetById(datasetId);
+export const getDataForColumns = async (datasetId: string, xColumn: string, yColumn: string): Promise<{ x: any; y: any; }[]> => {
+  const dataset = await getDatasetById(datasetId);
   if (!dataset) return [];
   
   return dataset.data.map(item => ({
     x: item[xColumn],
     y: item[yColumn]
   }));
-};
-
-// Clear data (for testing)
-export const clearData = (): void => {
-  datasets = [];
-  currentId = 0;
 };

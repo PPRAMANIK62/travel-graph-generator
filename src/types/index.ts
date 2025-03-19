@@ -17,3 +17,11 @@ export interface DataSet {
   data: TravelData[];
   createdAt: Date;
 }
+
+export interface SupabaseDataSet {
+  id: string;
+  name: string;
+  columns: Column[];
+  data: TravelData[];
+  created_at: string;
+}
