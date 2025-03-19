@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { getDataForColumns } from '@/lib/db';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, ScatterChart, Scatter, PieChart, Pie, Cell } from 'recharts';
@@ -235,7 +234,7 @@ const Graph = ({ datasetId, columns }: GraphProps) => {
               </SelectTrigger>
               <SelectContent>
                 {columns.map((column) => (
-                  <SelectItem key={column.name} value={column.name}>
+                  <SelectItem key={column.name} value={column.name || 'default'}>
                     {column.label}
                   </SelectItem>
                 ))}
@@ -252,12 +251,12 @@ const Graph = ({ datasetId, columns }: GraphProps) => {
               <SelectContent>
                 {numericColumns.length > 0 
                   ? numericColumns.map((column) => (
-                      <SelectItem key={column.name} value={column.name}>
+                      <SelectItem key={column.name} value={column.name || 'default'}>
                         {column.label}
                       </SelectItem>
                     ))
                   : columns.map((column) => (
-                      <SelectItem key={column.name} value={column.name}>
+                      <SelectItem key={column.name} value={column.name || 'default'}>
                         {column.label}
                       </SelectItem>
                     ))
