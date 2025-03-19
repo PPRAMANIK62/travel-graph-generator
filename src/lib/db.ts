@@ -85,8 +85,8 @@ export const addDataset = async (name: string, data: TravelData[], columns: Colu
       .from('user_uploads')
       .insert({
         name,
-        columns,
-        data
+        columns: columns as any, // Cast to any to bypass type checking
+        data: data as any // Cast to any to bypass type checking
       })
       .select('*')
       .single();
@@ -97,11 +97,12 @@ export const addDataset = async (name: string, data: TravelData[], columns: Colu
       return null;
     }
     
+    // Parse the columns and data from the response
     const dataset: DataSet = {
       id: insertResult.id,
       name: insertResult.name,
-      columns: insertResult.columns,
-      data: insertResult.data,
+      columns: insertResult.columns as unknown as Column[],
+      data: insertResult.data as unknown as TravelData[],
       createdAt: new Date(insertResult.created_at)
     };
     
@@ -127,11 +128,11 @@ export const getDatasets = async (): Promise<DataSet[]> => {
       return [];
     }
     
-    return data.map((item: SupabaseDataSet) => ({
+    return data.map((item: any) => ({
       id: item.id,
       name: item.name,
-      columns: item.columns,
-      data: item.data,
+      columns: item.columns as unknown as Column[],
+      data: item.data as unknown as TravelData[],
       createdAt: new Date(item.created_at)
     }));
   } catch (error) {
@@ -159,8 +160,8 @@ export const getDatasetById = async (id: string): Promise<DataSet | undefined> =
     return {
       id: data.id,
       name: data.name,
-      columns: data.columns,
-      data: data.data,
+      columns: data.columns as unknown as Column[],
+      data: data.data as unknown as TravelData[],
       createdAt: new Date(data.created_at)
     };
   } catch (error) {
