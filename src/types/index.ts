@@ -16,6 +16,7 @@ export interface DataSet {
   columns: Column[];
   data: TravelData[];
   createdAt: Date;
+  userId?: string;
 }
 
 export interface SupabaseDataSet {
@@ -24,4 +25,5 @@ export interface SupabaseDataSet {
   columns: Column[];
   data: TravelData[];
   created_at: string;
+  user_id?: string;
 }

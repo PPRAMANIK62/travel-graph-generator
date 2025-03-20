@@ -16,6 +16,7 @@ export type Database = {
           data: Json
           id: string
           name: string
+          user_id: string | null
         }
         Insert: {
           columns: Json
@@ -23,6 +24,7 @@ export type Database = {
           data: Json
           id?: string
           name: string
+          user_id?: string | null
         }
         Update: {
           columns?: Json
@@ -30,6 +32,7 @@ export type Database = {
           data?: Json
           id?: string
           name?: string
+          user_id?: string | null
         }
         Relationships: []
       }

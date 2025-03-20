@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner';
 import { DataSet, TravelData, Column, SupabaseDataSet } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -81,12 +80,21 @@ export const parseCSV = (csvText: string): { data: TravelData[], columns: Column
 // Add a new dataset to Supabase
 export const addDataset = async (name: string, data: TravelData[], columns: Column[]): Promise<DataSet | null> => {
   try {
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast.error('You must be logged in to upload data');
+      return null;
+    }
+    
     const { data: insertResult, error } = await supabase
       .from('user_uploads')
       .insert({
         name,
         columns: columns as any, // Cast to any to bypass type checking
-        data: data as any // Cast to any to bypass type checking
+        data: data as any, // Cast to any to bypass type checking
+        user_id: user.id
       })
       .select('*')
       .single();
@@ -103,7 +111,8 @@ export const addDataset = async (name: string, data: TravelData[], columns: Colu
       name: insertResult.name,
       columns: insertResult.columns as unknown as Column[],
       data: insertResult.data as unknown as TravelData[],
-      createdAt: new Date(insertResult.created_at)
+      createdAt: new Date(insertResult.created_at),
+      userId: insertResult.user_id
     };
     
     return dataset;
@@ -133,7 +142,8 @@ export const getDatasets = async (): Promise<DataSet[]> => {
       name: item.name,
       columns: item.columns as unknown as Column[],
       data: item.data as unknown as TravelData[],
-      createdAt: new Date(item.created_at)
+      createdAt: new Date(item.created_at),
+      userId: item.user_id
     }));
   } catch (error) {
     console.error("Error fetching datasets:", error);
@@ -186,4 +196,27 @@ export const getDataForColumns = async (datasetId: string, xColumn: string, yCol
     x: item[xColumn],
     y: item[yColumn]
   }));
+};
+
+// Delete a dataset by ID
+export const deleteDataset = async (id: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('user_uploads')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error("Error deleting dataset:", error);
+      toast.error("Failed to delete dataset");
+      return false;
+    }
+    
+    toast.success("Dataset deleted successfully");
+    return true;
+  } catch (error) {
+    console.error("Error deleting dataset:", error);
+    toast.error("Failed to delete dataset");
+    return false;
+  }
 };

@@ -1,102 +1,128 @@
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { BarChart3, LineChart, PieChart, UploadCloud, Layers, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Navbar from '@/components/Navbar';
-import { LineChart, UploadCloud, Sparkles, MoveRight } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
-  const navigate = useNavigate();
+  const { session } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
-      <Navbar />
-      
-      <main className="container mx-auto px-4 pt-24 pb-16">
-        <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto animate-fade-up">
-          <div className="inline-block p-3 bg-primary/10 rounded-full mb-6">
-            <LineChart className="h-8 w-8 text-primary" />
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-            Travel Data Visualization
-          </h1>
-          
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl">
-            Upload your travel data and create beautiful, interactive visualizations
-            with just a few clicks. Analyze trends and gain insights from your data.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mb-16">
-            <Button 
-              size="lg" 
-              onClick={() => navigate('/input')}
-              className="gap-2"
-            >
-              <UploadCloud className="h-5 w-5" />
-              Upload Data
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="lg"
-              onClick={() => navigate('/plot')} 
-              className="gap-2"
-            >
-              <LineChart className="h-5 w-5" />
-              Create Graphs
-            </Button>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 animate-fade-up">
-          <div className="bg-card rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <UploadCloud className="h-6 w-6 text-primary" />
+    <div className="flex flex-col min-h-full">
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                    Transform Your Data into Beautiful Visualizations
+                  </h1>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Upload your CSV files and create stunning graphs and charts in seconds. Analyze patterns, discover insights, and make data-driven decisions.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Link to={session ? "/input" : "/auth"}>
+                    <Button size="lg" className="gap-2">
+                      <UploadCloud className="h-5 w-5" />
+                      {session ? "Upload Data" : "Get Started"}
+                    </Button>
+                  </Link>
+                  <Link to={session ? "/plot" : "/auth"}>
+                    <Button size="lg" variant="outline" className="gap-2">
+                      <BarChart3 className="h-5 w-5" />
+                      View Visualizations
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+                  <div className="grid gap-4">
+                    <div className="rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 p-8 shadow-sm">
+                      <LineChart className="h-12 w-12 text-indigo-500" />
+                    </div>
+                    <div className="rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 p-8 shadow-sm">
+                      <BarChart3 className="h-12 w-12 text-rose-500" />
+                    </div>
+                  </div>
+                  <div className="grid gap-4">
+                    <div className="rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 p-8 shadow-sm">
+                      <PieChart className="h-12 w-12 text-blue-500" />
+                    </div>
+                    <div className="rounded-xl bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/20 dark:to-yellow-900/20 p-8 shadow-sm">
+                      <Layers className="h-12 w-12 text-amber-500" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-medium mb-2">Easy Data Upload</h3>
-            <p className="text-muted-foreground">
-              Import your travel data quickly using our CSV uploader. Our system automatically detects data types and column formats.
-            </p>
           </div>
-          
-          <div className="bg-card rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Sparkles className="h-6 w-6 text-primary" />
+        </section>
+
+        {/* Features Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
+                  Key Features
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Powerful Data Visualization Tools
+                </h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Graphify provides all the tools you need to transform your data into meaningful visualizations.
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-medium mb-2">Dynamic Visualizations</h3>
-            <p className="text-muted-foreground">
-              Create beautiful charts and graphs with customizable axes. Select any data column to visualize relationships and patterns.
-            </p>
-          </div>
-          
-          <div className="bg-card rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <LineChart className="h-6 w-6 text-primary" />
+            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <UploadCloud className="h-6 w-6" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold">Easy Data Upload</h3>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Simply drag and drop your CSV files or use our file picker to get started.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold">Versatile Chart Types</h3>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Create line charts, bar charts, scatter plots, pie charts and more with just a few clicks.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Layers className="h-6 w-6" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold">Data Management</h3>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Organize, edit, and manage your datasets securely in one place.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-medium mb-2">Multiple Chart Types</h3>
-            <p className="text-muted-foreground">
-              Choose from line charts, bar graphs, scatter plots, and pie charts to best represent your travel data and insights.
-            </p>
+            <div className="flex justify-center">
+              <Link to={session ? "/input" : "/auth"}>
+                <Button size="lg" className="gap-2">
+                  Get Started <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-        
-        <div className="mt-20 text-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/input')}
-            className="gap-2 text-primary hover:text-primary hover:bg-primary/10"
-          >
-            Get Started
-            <MoveRight className="h-4 w-4" />
-          </Button>
-        </div>
+        </section>
       </main>
-      
-      <footer className="border-t bg-card py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} TravelGraph. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 };
