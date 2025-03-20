@@ -123,12 +123,21 @@ export const addDataset = async (name: string, data: TravelData[], columns: Colu
   }
 };
 
-// Get all datasets from Supabase
+// Get all datasets from Supabase - modified to only get current user's datasets
 export const getDatasets = async (): Promise<DataSet[]> => {
   try {
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      console.error("No authenticated user found");
+      return [];
+    }
+    
     const { data, error } = await supabase
       .from('user_uploads')
       .select('*')
+      .eq('user_id', user.id) // Only get datasets for the current user
       .order('created_at', { ascending: false });
     
     if (error) {

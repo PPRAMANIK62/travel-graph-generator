@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom'; 
-import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarRail } from '@/components/ui/sidebar';
 import { LineChart, UploadCloud, Home, LogOut, BarChart3, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -66,7 +66,7 @@ const AppLayout = () => {
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full bg-[#f8f9fc]">
         <Sidebar className="border-r border-border/60">
           <SidebarHeader className="px-3 py-5 flex items-center gap-2">
@@ -80,7 +80,10 @@ const AppLayout = () => {
           
           <SidebarContent>
             <div className="px-3 py-2">
-              <p className="text-xs font-medium text-muted-foreground px-2 mb-3">MENU</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-medium text-muted-foreground px-2">MENU</p>
+                <SidebarTrigger />
+              </div>
               <SidebarMenu>
                 {links.map((link) => (
                   <SidebarMenuItem key={link.href}>
@@ -135,6 +138,9 @@ const AppLayout = () => {
               </div>
             )}
           </SidebarFooter>
+          
+          {/* Add the rail handle for sidebar resizing */}
+          <SidebarRail />
         </Sidebar>
         
         <SidebarInset className="bg-[#f8f9fc]">
