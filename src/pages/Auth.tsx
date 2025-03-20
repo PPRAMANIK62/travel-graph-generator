@@ -28,19 +28,32 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase.auth.signUp({
+      // Sign up the user
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
       
-      if (error) {
-        toast.error(error.message);
+      if (signUpError) {
+        toast.error(signUpError.message);
+        setLoading(false);
+        return;
+      }
+      
+      // Immediately sign in after successful signup
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (signInError) {
+        toast.error(signInError.message);
       } else {
-        toast.success('Account created successfully!');
+        toast.success('Account created and signed in successfully!');
         navigate('/input');
       }
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error('Error in signup/signin process:', error);
       toast.error('Failed to create account');
     } finally {
       setLoading(false);
