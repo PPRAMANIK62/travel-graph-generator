@@ -5,8 +5,9 @@ import Graph from '@/components/Graph';
 import { Button } from '@/components/ui/button';
 import { getDatasets, getDatasetById } from '@/lib/db';
 import { DataSet } from '@/types';
-import { BarChart, Upload, MoveLeft } from 'lucide-react';
+import { BarChart, Upload, MoveLeft, LineChart, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const Plot = () => {
   const [datasets, setDatasets] = useState<DataSet[]>([]);
@@ -54,13 +55,13 @@ const Plot = () => {
   };
 
   return (
-    <div className="min-h-full py-8 px-4">
+    <div className="min-h-full p-6 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 animate-fade-up">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 animate-fade-up">
           <div>
-            <h1 className="text-3xl font-bold">Visualize Data</h1>
-            <p className="text-muted-foreground mt-1">
-              Generate interactive charts from your uploaded data
+            <h1 className="text-2xl font-semibold">Data Visualization</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Create interactive charts from your datasets
             </p>
           </div>
           
@@ -68,6 +69,7 @@ const Plot = () => {
             <Button 
               variant="outline" 
               onClick={() => navigate('/input')}
+              size="sm"
               className="gap-2"
             >
               <MoveLeft className="h-4 w-4" />
@@ -76,30 +78,32 @@ const Plot = () => {
             
             <Button 
               onClick={handleUploadClick}
+              size="sm"
               className="gap-2"
             >
               <Upload className="h-4 w-4" />
-              Upload More Data
+              Upload Data
             </Button>
           </div>
         </div>
         
-        <div className="space-y-8">
+        <div className="space-y-6">
           {isLoading ? (
-            <div className="flex justify-center p-8">
-              <p className="text-muted-foreground">Loading datasets...</p>
+            <div className="flex justify-center p-6 bg-white rounded-lg border border-border/60 shadow-sm">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : datasets.length === 0 ? (
-            <div className="bg-card border rounded-xl p-10 text-center animate-fade-up">
+            <div className="bg-white border border-border/60 rounded-lg p-8 text-center animate-fade-up shadow-sm">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
                 <BarChart className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">No Datasets Available</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              <h2 className="text-lg font-medium mb-2">No Datasets Available</h2>
+              <p className="text-muted-foreground max-w-md mx-auto text-sm mb-4">
                 You need to upload some data before you can create visualizations.
               </p>
               <Button 
                 onClick={handleUploadClick}
+                size="sm"
                 className="gap-2"
               >
                 <Upload className="h-4 w-4" />
@@ -108,36 +112,53 @@ const Plot = () => {
             </div>
           ) : (
             <>
-              <div className="animate-fade-up">
-                <h2 className="text-xl font-semibold mb-4">Select Dataset</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="animate-fade-up bg-white rounded-lg border border-border/60 shadow-sm p-6">
+                <h2 className="text-sm font-medium mb-4">Select Dataset</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {datasets.map((dataset) => (
                     <div
                       key={dataset.id}
-                      className={`relative bg-card rounded-xl p-5 border shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md ${
-                        selectedDataset?.id === dataset.id
-                          ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
-                          : ''
-                      }`}
+                      className={cn(
+                        "dataset-card cursor-pointer group",
+                        selectedDataset?.id === dataset.id ? "selected" : ""
+                      )}
                       onClick={() => handleSelectDataset(dataset)}
                     >
                       <div className="flex items-center justify-between">
-                        <h3 className="font-medium truncate">{dataset.name}</h3>
-                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <BarChart className="h-4 w-4 text-primary" />
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
+                            <LineChart className="h-4 w-4 text-primary" />
+                          </div>
+                          <h3 className="font-medium truncate">{dataset.name}</h3>
+                        </div>
+                        
+                        <ChevronRight className={cn(
+                          "h-4 w-4 text-muted-foreground transition-all",
+                          selectedDataset?.id === dataset.id ? "text-primary" : "opacity-0 group-hover:opacity-100"
+                        )} />
+                      </div>
+                      
+                      <div className="flex gap-3 mt-3">
+                        <div className="bg-secondary rounded-md px-2 py-1 text-xs">
+                          {dataset.data.length} records
+                        </div>
+                        <div className="bg-secondary rounded-md px-2 py-1 text-xs">
+                          {dataset.columns.length} columns
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {dataset.data.length} records, {dataset.columns.length} columns
-                      </p>
                     </div>
                   ))}
                 </div>
               </div>
               
               {selectedDataset && (
-                <div className="animate-fade-up">
-                  <h2 className="text-xl font-semibold mb-4">Create Visualization</h2>
+                <div className="animate-fade-up bg-white rounded-lg border border-border/60 shadow-sm p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <h2 className="text-lg font-medium">Create Visualization</h2>
+                    <div className="text-xs font-medium px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                      {selectedDataset.name}
+                    </div>
+                  </div>
                   <Graph 
                     datasetId={selectedDataset.id} 
                     columns={selectedDataset.columns} 

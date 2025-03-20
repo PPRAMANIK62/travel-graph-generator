@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 210 50% 98%;
+    --background: 0 0% 100%;
     --foreground: 220 20% 20%;
 
     --card: 0 0% 100%;
@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 20%;
 
-    --primary: 210 100% 60%;
+    --primary: 215 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 20% 96%;
@@ -31,7 +31,7 @@
 
     --border: 220 20% 90%;
     --input: 220 20% 90%;
-    --ring: 210 100% 60%;
+    --ring: 215 100% 50%;
 
     --radius: 0.5rem;
   }
@@ -50,8 +50,8 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -60,18 +60,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: hsl(var(--muted-foreground) / 0.2);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: hsl(var(--muted-foreground) / 0.4);
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Layout transition */
@@ -100,10 +100,26 @@
 /* Custom components styles */
 @layer components {
   .btn-icon {
-    @apply h-10 w-10 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-200;
+    @apply h-9 w-9 rounded-full flex items-center justify-center bg-white shadow-sm hover:shadow-md transition-all duration-200;
   }
   
   .input-focus {
-    @apply focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background;
+  }
+
+  .sidebar-menu-item {
+    @apply flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .sidebar-menu-item.active {
+    @apply bg-primary/10 text-primary font-medium;
+  }
+
+  .dataset-card {
+    @apply relative bg-card rounded-lg border border-border/50 p-4 shadow-sm transition-all duration-200 hover:shadow-md;
+  }
+
+  .dataset-card.selected {
+    @apply ring-1 ring-primary ring-offset-1 ring-offset-background;
   }
 }

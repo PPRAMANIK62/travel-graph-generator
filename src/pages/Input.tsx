@@ -6,8 +6,9 @@ import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { getDatasets, deleteDataset } from '@/lib/db';
 import { DataSet } from '@/types';
-import { LineChart, CalendarDays, Trash2, AlertCircle } from 'lucide-react';
+import { LineChart, CalendarDays, Trash2, AlertCircle, Upload, Plus, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Separator } from '@/components/ui/separator';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import { cn } from '@/lib/utils';
 
 const Input = () => {
   const [datasets, setDatasets] = useState<DataSet[]>([]);
@@ -80,37 +82,46 @@ const Input = () => {
   };
 
   return (
-    <div className="min-h-full py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 animate-fade-up">
+    <div className="min-h-full p-6 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 animate-fade-up">
           <div>
-            <h1 className="text-3xl font-bold">Upload Data</h1>
-            <p className="text-muted-foreground mt-1">
-              Import your CSV files to visualize data patterns and insights
+            <h1 className="text-2xl font-semibold">Data Management</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Import and manage your datasets for visualization
             </p>
           </div>
           
           {selectedDataset && (
-            <Button onClick={handleViewGraph} className="gap-2">
-              <LineChart className="h-4 w-4" />
+            <Button 
+              onClick={handleViewGraph} 
+              size="sm"
+              className="gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
               Create Visualizations
             </Button>
           )}
         </div>
         
-        <div className="space-y-8">
-          <FileUpload onUploadSuccess={handleUploadSuccess} />
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg border border-border/60 shadow-sm p-5">
+            <h2 className="text-sm font-medium mb-4">Upload New Dataset</h2>
+            <FileUpload onUploadSuccess={handleUploadSuccess} />
+          </div>
           
           {isLoading ? (
-            <div className="flex justify-center p-8">
-              <p className="text-muted-foreground">Loading datasets...</p>
+            <div className="flex justify-center p-6 bg-white rounded-lg border border-border/60 shadow-sm">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : datasets.length > 0 ? (
             <div className="animate-fade-up">
-              <div className="flex items-center gap-2 mb-4">
-                <h2 className="text-xl font-semibold">Datasets</h2>
-                <div className="text-sm text-muted-foreground bg-secondary rounded-full px-3 py-0.5">
-                  {datasets.length}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-medium">Your Datasets</h2>
+                  <div className="text-xs text-muted-foreground bg-secondary rounded-full px-2 py-0.5">
+                    {datasets.length}
+                  </div>
                 </div>
               </div>
               
@@ -118,21 +129,31 @@ const Input = () => {
                 {datasets.map((dataset) => (
                   <div 
                     key={dataset.id}
-                    className={`group relative bg-card rounded-xl p-5 border shadow-sm transition-all duration-200 hover:shadow-md ${
-                      selectedDataset?.id === dataset.id
-                        ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
-                        : ''
-                    }`}
+                    className={cn(
+                      "dataset-card group",
+                      selectedDataset?.id === dataset.id ? "selected" : ""
+                    )}
                   >
                     <div className="flex items-start justify-between">
                       <div 
                         className="flex-1 cursor-pointer" 
                         onClick={() => setSelectedDataset(dataset)}
                       >
-                        <h3 className="font-medium truncate pr-6">{dataset.name}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {dataset.data.length} records, {dataset.columns.length} columns
-                        </p>
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
+                            <LineChart className="h-4 w-4 text-primary" />
+                          </div>
+                          <h3 className="font-medium truncate">{dataset.name}</h3>
+                        </div>
+                        
+                        <div className="flex gap-3 mt-3">
+                          <div className="bg-secondary rounded-md px-2 py-1 text-xs">
+                            {dataset.data.length} records
+                          </div>
+                          <div className="bg-secondary rounded-md px-2 py-1 text-xs">
+                            {dataset.columns.length} columns
+                          </div>
+                        </div>
                       </div>
                       
                       <AlertDialog>
@@ -140,7 +161,7 @@ const Input = () => {
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -173,40 +194,48 @@ const Input = () => {
                       <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
                       {new Date(dataset.createdAt).toLocaleDateString()}
                     </div>
-                    
-                    <div className="absolute inset-0 bg-primary/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="bg-card border rounded-xl p-8 text-center animate-fade-up">
+            <div className="bg-white border border-border/60 rounded-lg p-8 text-center animate-fade-up shadow-sm">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
                 <AlertCircle className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">No Datasets Available</h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
+              <h2 className="text-lg font-medium mb-2">No Datasets Available</h2>
+              <p className="text-muted-foreground max-w-md mx-auto text-sm">
                 Upload your first dataset using the form above to get started.
               </p>
             </div>
           )}
           
           {selectedDataset && (
-            <div className="animate-fade-up mt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">{selectedDataset.name}</h2>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleViewGraph}
-                  className="gap-2"
-                >
-                  <LineChart className="h-4 w-4" />
-                  Create Visualizations
-                </Button>
+            <div className="animate-fade-up">
+              <div className="bg-white rounded-lg border border-border/60 shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-medium">{selectedDataset.name}</h2>
+                    <div className="text-xs font-medium px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                      {selectedDataset.data.length} rows
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleViewGraph}
+                    className="gap-2"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Visualize
+                  </Button>
+                </div>
+                
+                <div className="border border-border/60 rounded-lg overflow-hidden">
+                  <DataTable dataset={selectedDataset} />
+                </div>
               </div>
-              
-              <DataTable dataset={selectedDataset} />
             </div>
           )}
         </div>
