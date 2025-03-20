@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { LineChart, UploadCloud, Home, UserCircle, LogOut, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const { session, signOut } = useAuth();
   
@@ -25,6 +26,7 @@ const Navbar = () => {
     try {
       await signOut();
       toast.success('Signed out successfully');
+      navigate('/auth');
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error('Failed to sign out');

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom'; 
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset } from '@/components/ui/sidebar';
 import { LineChart, UploadCloud, Home, LogOut, BarChart3, User } from 'lucide-react';
@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 const AppLayout = () => {
   const { session, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const AppLayout = () => {
     try {
       await signOut();
       toast.success('Signed out successfully');
+      navigate('/auth');
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error('Failed to sign out');

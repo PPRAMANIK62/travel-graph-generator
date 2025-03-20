@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,12 +15,25 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { session } = useAuth();
   
-  // If user is already logged in, redirect to input page
-  if (session) {
-    navigate('/input');
-    return null;
+  // Redirect if already logged in
+  useEffect(() => {
+    if (session) {
+      // If coming from a protected route, redirect back there
+      const from = location.state?.from?.pathname || '/input';
+      navigate(from, { replace: true });
+    }
+  }, [session, navigate, location]);
+  
+  // If still checking auth status, don't render anything
+  if (loading && !email && !password) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-gradient-to-b from-background to-secondary/20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -65,16 +78,20 @@ const Auth = () => {
     setLoading(true);
     
     try {
+      console.log('Signing in with:', email);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
+        console.error('Sign in error:', error);
         toast.error(error.message);
       } else {
         toast.success('Signed in successfully!');
-        navigate('/input');
+        // If coming from a protected route, redirect back there
+        const from = location.state?.from?.pathname || '/input';
+        navigate(from, { replace: true });
       }
     } catch (error) {
       console.error('Error signing in:', error);
