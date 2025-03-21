@@ -5,9 +5,11 @@ import Graph from '@/components/Graph';
 import { Button } from '@/components/ui/button';
 import { getDatasets, getDatasetById } from '@/lib/db';
 import { DataSet } from '@/types';
-import { BarChart, Upload, MoveLeft, LineChart, ChevronRight } from 'lucide-react';
+import { BarChart, Upload, MoveLeft, LineChart, ChevronRight, PlusCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
 const Plot = () => {
   const [datasets, setDatasets] = useState<DataSet[]>([]);
@@ -55,7 +57,7 @@ const Plot = () => {
   };
 
   return (
-    <div className="min-h-full p-6 md:p-8">
+    <div className="min-h-full p-6 md:p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 animate-fade-up">
           <div>
@@ -81,8 +83,8 @@ const Plot = () => {
               size="sm"
               className="gap-2"
             >
-              <Upload className="h-4 w-4" />
-              Upload Data
+              <PlusCircle className="h-4 w-4" />
+              New Dataset
             </Button>
           </div>
         </div>
@@ -93,7 +95,7 @@ const Plot = () => {
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : datasets.length === 0 ? (
-            <div className="bg-white border border-border/60 rounded-lg p-8 text-center animate-fade-up shadow-sm">
+            <div className="glass border border-border/60 rounded-lg p-8 text-center animate-fade-up shadow-sm">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
                 <BarChart className="h-6 w-6 text-primary" />
               </div>
@@ -112,39 +114,52 @@ const Plot = () => {
             </div>
           ) : (
             <>
-              <div className="animate-fade-up bg-white rounded-lg border border-border/60 shadow-sm p-6">
-                <h2 className="text-sm font-medium mb-4">Select Dataset</h2>
+              <div className="animate-fade-up glass rounded-lg border border-border/60 shadow-sm p-6">
+                <h2 className="text-sm font-medium mb-4 text-primary/80">Select Dataset</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {datasets.map((dataset) => (
                     <div
                       key={dataset.id}
                       className={cn(
-                        "dataset-card cursor-pointer group",
-                        selectedDataset?.id === dataset.id ? "selected" : ""
+                        "dataset-card cursor-pointer group hover:shadow-md transition-all duration-200",
+                        selectedDataset?.id === dataset.id ? "selected bg-primary/5" : ""
                       )}
                       onClick={() => handleSelectDataset(dataset)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
-                            <LineChart className="h-4 w-4 text-primary" />
+                          <div className={cn(
+                            "h-8 w-8 rounded-md flex items-center justify-center",
+                            selectedDataset?.id === dataset.id 
+                              ? "bg-primary/20" 
+                              : "bg-primary/10"
+                          )}>
+                            <LineChart className={cn(
+                              "h-4 w-4",
+                              selectedDataset?.id === dataset.id 
+                                ? "text-primary" 
+                                : "text-primary/70"
+                            )} />
                           </div>
-                          <h3 className="font-medium truncate">{dataset.name}</h3>
+                          <div>
+                            <h3 className="font-medium truncate">{dataset.name}</h3>
+                            <p className="text-xs text-muted-foreground">{new Date(dataset.createdAt).toLocaleDateString()}</p>
+                          </div>
                         </div>
                         
                         <ChevronRight className={cn(
-                          "h-4 w-4 text-muted-foreground transition-all",
-                          selectedDataset?.id === dataset.id ? "text-primary" : "opacity-0 group-hover:opacity-100"
+                          "h-4 w-4 transition-all",
+                          selectedDataset?.id === dataset.id ? "text-primary" : "opacity-0 group-hover:opacity-100 text-muted-foreground"
                         )} />
                       </div>
                       
                       <div className="flex gap-3 mt-3">
-                        <div className="bg-secondary rounded-md px-2 py-1 text-xs">
+                        <Badge variant="outline" className="bg-secondary/50">
                           {dataset.data.length} records
-                        </div>
-                        <div className="bg-secondary rounded-md px-2 py-1 text-xs">
+                        </Badge>
+                        <Badge variant="outline" className="bg-secondary/50">
                           {dataset.columns.length} columns
-                        </div>
+                        </Badge>
                       </div>
                     </div>
                   ))}
@@ -152,12 +167,12 @@ const Plot = () => {
               </div>
               
               {selectedDataset && (
-                <div className="animate-fade-up bg-white rounded-lg border border-border/60 shadow-sm p-6">
+                <div className="animate-fade-up glass rounded-lg border border-border/60 shadow-sm p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-lg font-medium">Create Visualization</h2>
-                    <div className="text-xs font-medium px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                    <h2 className="text-lg font-medium text-primary/80">Create Visualization</h2>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
                       {selectedDataset.name}
-                    </div>
+                    </Badge>
                   </div>
                   <Graph 
                     datasetId={selectedDataset.id} 

@@ -1,12 +1,12 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FileUpload from '@/components/FileUpload';
+import ManualDataInput from '@/components/ManualDataInput';
 import DataTable from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { getDatasets, deleteDataset } from '@/lib/db';
 import { DataSet } from '@/types';
-import { LineChart, CalendarDays, Trash2, AlertCircle, Upload, Plus, BarChart3 } from 'lucide-react';
+import { LineChart, CalendarDays, Trash2, AlertCircle, Upload, Plus, BarChart3, FileText, PencilLine } from 'lucide-react';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 const Input = () => {
@@ -106,8 +107,27 @@ const Input = () => {
         
         <div className="space-y-6">
           <div className="bg-white rounded-lg border border-border/60 shadow-sm p-5">
-            <h2 className="text-sm font-medium mb-4">Upload New Dataset</h2>
-            <FileUpload onUploadSuccess={handleUploadSuccess} />
+            <h2 className="text-sm font-medium mb-4">Add New Dataset</h2>
+            <Tabs defaultValue="upload" className="w-full">
+              <TabsList className="mb-4">
+                <TabsTrigger value="upload" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  File Upload
+                </TabsTrigger>
+                <TabsTrigger value="manual" className="flex items-center gap-2">
+                  <PencilLine className="h-4 w-4" />
+                  Manual Input
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="upload">
+                <FileUpload onUploadSuccess={handleUploadSuccess} />
+              </TabsContent>
+              
+              <TabsContent value="manual">
+                <ManualDataInput onDataCreated={handleUploadSuccess} />
+              </TabsContent>
+            </Tabs>
           </div>
           
           {isLoading ? (
