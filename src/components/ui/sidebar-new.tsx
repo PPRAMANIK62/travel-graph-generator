@@ -70,7 +70,7 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = (props: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <>
       <DesktopSidebar {...props} />
@@ -83,7 +83,7 @@ export const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const { open, setOpen, animate } = useSidebar();
   return (
     <motion.div
@@ -107,7 +107,7 @@ export const MobileSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<"div">) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const { open, setOpen } = useSidebar();
   return (
     <>
@@ -153,19 +153,21 @@ export const MobileSidebar = ({
   );
 };
 
+interface SidebarLinkProps {
+  link: Links;
+  className?: string;
+  active?: boolean;
+  onClick?: () => void;
+  [key: string]: any;
+}
+
 export const SidebarLink = ({
   link,
   className,
   active = false,
   onClick,
   ...props
-}: {
-  link: Links;
-  className?: string;
-  active?: boolean;
-  onClick?: () => void;
-  [key: string]: any;
-}) => {
+}: SidebarLinkProps) => {
   const { open, animate } = useSidebar();
   return (
     <Link
