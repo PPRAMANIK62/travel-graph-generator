@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, HTMLMotionProps } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 interface Links {
@@ -85,19 +85,24 @@ export const DesktopSidebar = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   const { open, setOpen, animate } = useSidebar();
+  
+  // Only include safe props for motion.div
+  const motionProps: HTMLMotionProps<"div"> = {
+    className: cn(
+      "h-full px-6 py-6 hidden md:flex md:flex-col bg-white dark:bg-neutral-900 border-r border-border/30 shadow-sm w-[280px] flex-shrink-0",
+      className
+    ),
+    animate: {
+      width: animate ? (open ? "280px" : "80px") : "280px",
+    },
+    transition: { duration: 0.2, ease: "easeInOut" },
+    onMouseEnter: () => setOpen(true),
+    onMouseLeave: () => setOpen(false),
+  };
+
   return (
     <motion.div
-      className={cn(
-        "h-full px-6 py-6 hidden md:flex md:flex-col bg-white dark:bg-neutral-900 border-r border-border/30 shadow-sm w-[280px] flex-shrink-0",
-        className
-      )}
-      animate={{
-        width: animate ? (open ? "280px" : "80px") : "280px",
-      }}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      {...props}
+      {...motionProps}
     >
       {children}
     </motion.div>
