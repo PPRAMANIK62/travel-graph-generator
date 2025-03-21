@@ -50,8 +50,8 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -60,12 +60,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.2);
+  background: hsl(var(--muted-foreground) / 0.15);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.4);
+  background: hsl(var(--muted-foreground) / 0.3);
 }
 
 .glass {
@@ -121,5 +121,18 @@
 
   .dataset-card.selected {
     @apply ring-1 ring-primary ring-offset-1 ring-offset-background;
+  }
+  
+  /* New elegant sidebar styling */
+  .sidebar-glassmorphism {
+    @apply backdrop-blur-sm bg-white/95 dark:bg-neutral-900/95 border-r border-border/30;
+  }
+  
+  .sidebar-item-hover {
+    @apply hover:bg-accent/50 hover:text-foreground transition-all duration-200;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-primary/10 text-primary font-medium;
   }
 }

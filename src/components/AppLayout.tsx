@@ -81,7 +81,7 @@ const AppLayout = () => {
               {sidebarOpen ? <Logo /> : <LogoIcon />}
             </div>
             
-            <div className="mt-8 flex flex-col gap-2">
+            <div className="mt-8 flex flex-col gap-1.5">
               {links.map((link) => (
                 <SidebarLink 
                   key={link.href}
@@ -94,10 +94,10 @@ const AppLayout = () => {
           
           {session && (
             <div className="py-4">
-              <Separator className="my-4" />
-              <div className="flex items-center gap-2 py-2">
-                <Avatar className="h-8 w-8 border">
-                  <AvatarFallback className="bg-primary/10 text-primary">
+              <Separator className="my-4 opacity-50" />
+              <div className="flex items-center gap-3 px-3 py-2">
+                <Avatar className="h-8 w-8 border border-primary/10">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
@@ -130,6 +130,7 @@ const AppLayout = () => {
                   label: "Sign Out"
                 }}
                 onClick={handleSignOut}
+                className="mt-2 text-foreground/70 hover:text-destructive/80"
               />
             </div>
           )}
