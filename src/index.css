@@ -107,32 +107,11 @@
     @apply focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background;
   }
 
-  .sidebar-menu-item {
-    @apply flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
-  }
-
-  .sidebar-menu-item.active {
-    @apply bg-primary/10 text-primary font-medium;
-  }
-
   .dataset-card {
     @apply relative bg-card rounded-lg border border-border/50 p-4 shadow-sm transition-all duration-200 hover:shadow-md;
   }
 
   .dataset-card.selected {
     @apply ring-1 ring-primary ring-offset-1 ring-offset-background;
-  }
-  
-  /* New elegant sidebar styling */
-  .sidebar-glassmorphism {
-    @apply backdrop-blur-sm bg-white/95 dark:bg-neutral-900/95 border-r border-border/30;
-  }
-  
-  .sidebar-item-hover {
-    @apply hover:bg-accent/50 hover:text-foreground transition-all duration-200;
-  }
-  
-  .sidebar-item-active {
-    @apply bg-primary/10 text-primary font-medium;
   }
 }
